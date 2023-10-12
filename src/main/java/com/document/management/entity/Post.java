@@ -35,8 +35,4 @@ public class Post implements Serializable {
 
     @Column(name = "body")
     private String body;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment")
-    private List<Comment> comments;
-
 }

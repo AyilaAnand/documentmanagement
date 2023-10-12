@@ -56,9 +56,9 @@ public class DocumentService {
     }
 
     public void createPostOnDocument(String id, Post post) {
-        jsonPlaceholderFeignService.createPostForDocument(post);
+        logger.info("post data::{}", post);
+        post = jsonPlaceholderFeignService.createPostForDocument(post);
         com.document.management.entity.Post postEntity = new com.document.management.entity.Post();
-        postEntity.setId(post.getId());
         postEntity.setTitle(post.getTitle());
         postEntity.setUserId(post.getUserId());
         postEntity.setBody(post.getBody());
@@ -69,9 +69,8 @@ public class DocumentService {
     }
 
     public void createCommentOnDocumentForPost(String docId, String postId, Comment comment) {
-        jsonPlaceholderFeignService.createCommentForDocument(comment);
+        comment = jsonPlaceholderFeignService.createCommentForDocument(comment);
         com.document.management.entity.Comment commentEntity = new com.document.management.entity.Comment();
-        commentEntity.setId(comment.getId());
         commentEntity.setName(comment.getName());
         commentEntity.setEmail(comment.getEmail());
         commentEntity.setBody(comment.getBody());
@@ -85,7 +84,7 @@ public class DocumentService {
     }
 
     public List<Post> getDocumentPosts(String docId) {
-        List<com.document.management.entity.Post> postList = postRepository.findAllByDocumentId(docId);
+        List<com.document.management.entity.Post> postList = postRepository.findAllByDocumentId(Long.valueOf(docId));
         return postList.stream()
             .map(post -> new Post(post.getId(), Long.valueOf(docId), post.getUserId(), post.getTitle(), post.getBody()))
                 .collect(Collectors.toList());

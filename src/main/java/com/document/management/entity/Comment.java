@@ -24,6 +24,7 @@ public class Comment implements Serializable {
     @JoinColumn(name = "document_id")
     Document document;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     Post post;
 

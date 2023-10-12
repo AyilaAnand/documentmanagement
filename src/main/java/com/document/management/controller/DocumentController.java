@@ -31,7 +31,7 @@ public static Logger logger = LoggerFactory.getLogger(DocumentController.class);
     @Autowired
     DocumentService documentService;
 
-    @PostMapping("upload")
+    @PostMapping("/upload")
     public String uploadDocument(@RequestParam("file") MultipartFile file) {
         Document document = documentService.uploadDocument(file);
         if(document.getId() > 0) {
@@ -43,10 +43,11 @@ public static Logger logger = LoggerFactory.getLogger(DocumentController.class);
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{documentId}")
     public boolean deleteDocument(@PathVariable("documentId") String documentId) {
         try {
             documentService.deleteDocument(Long.valueOf(documentId));
+            logger.info("document deleted successfully");
             return true;
         } catch(Exception ex) {
             logger.error("document delete failed", ex);
@@ -59,17 +60,17 @@ public static Logger logger = LoggerFactory.getLogger(DocumentController.class);
         List<Document> documentList = documentService.getAllDocuments();
         return documentList.stream()
         .map(doc -> new DocumentResponse(doc.getId(), doc.getFileName(), 
-        ServletUriComponentsBuilder.fromCurrentContextPath().path("/documents").path(doc.getId().toString())
+        ServletUriComponentsBuilder.fromCurrentContextPath().path("/documents/").path(doc.getId().toString())
         .toUriString())).collect(Collectors.toList());
     }
     
-    @PostMapping("/{id}/posts")
-    public String createPostOnDocument(@PathVariable("id") String id, Post post) {
+    @PostMapping("/{id}/posts/create")
+    public String createPostOnDocument(@PathVariable("id") String id, @RequestBody Post post) {
         documentService.createPostOnDocument(id, post);
         return "post created successfully"; 
     }
 
-    @PostMapping("/{docId}/posts/{postId}/comments")
+    @PostMapping("/{docId}/posts/{postId}/comments/create")
     public String createCommentOnDocumentForPost(@PathVariable("docId") String docId, @PathVariable("postId") String postId, @RequestBody Comment comment) {
         documentService.createCommentOnDocumentForPost(docId, postId, comment);
         return "Comment created Successfully";
