@@ -1,5 +1,6 @@
 package com.document.management.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +15,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "post")
@@ -23,9 +25,9 @@ public class Post implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "document_id")
-    Document document;
+    private Document document;
 
     @Column(name = "user_id")
     private String userId;

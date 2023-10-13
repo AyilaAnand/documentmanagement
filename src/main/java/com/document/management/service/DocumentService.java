@@ -16,6 +16,8 @@ import com.document.management.repository.CommentRepository;
 import com.document.management.repository.DocumentRepository;
 import com.document.management.repository.PostRepository;
 
+import lombok.NonNull;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,16 +26,16 @@ public class DocumentService {
     public static Logger logger = LoggerFactory.getLogger(DocumentService.class);
 
     @Autowired
-    IJsonPlaceholderFeignService jsonPlaceholderFeignService;
+    private IJsonPlaceholderFeignService jsonPlaceholderFeignService;
 
     @Autowired
     DocumentRepository documentRepository;
 
     @Autowired
-    PostRepository postRepository;
+    private PostRepository postRepository;
 
     @Autowired
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
     public Document uploadDocument(MultipartFile file) {
         Document document = new Document();
@@ -47,15 +49,21 @@ public class DocumentService {
         return documentRepository.save(document);
     }
 
-    public void deleteDocument(Long documentId) {
+    public boolean deleteDocument(@NonNull Long documentId) {
         documentRepository.deleteById(documentId);
+        if(documentRepository.findById(documentId).isEmpty()) {
+            logger.info("document deleted successfully");
+            return true;
+        }
+        logger.info("document deletion failed");
+        return false;
     }
 
     public List<Document> getAllDocuments() {
         return documentRepository.findAll();
     }
 
-    public void createPostOnDocument(String id, Post post) {
+    public void createPostOnDocument(@NonNull String id, @NonNull Post post) {
         logger.info("post data::{}", post);
         post = jsonPlaceholderFeignService.createPostForDocument(post);
         com.document.management.entity.Post postEntity = new com.document.management.entity.Post();
@@ -68,7 +76,7 @@ public class DocumentService {
         postRepository.save(postEntity);
     }
 
-    public void createCommentOnDocumentForPost(String docId, String postId, Comment comment) {
+    public void createCommentOnDocumentForPost(@NonNull String docId, @NonNull String postId, @NonNull Comment comment) {
         comment = jsonPlaceholderFeignService.createCommentForDocument(comment);
         com.document.management.entity.Comment commentEntity = new com.document.management.entity.Comment();
         commentEntity.setName(comment.getName());
@@ -83,11 +91,10 @@ public class DocumentService {
         commentRepository.save(commentEntity);
     }
 
-    public List<Post> getDocumentPosts(String docId) {
+    public List<Post> getDocumentPosts(@NonNull String docId) {
         List<com.document.management.entity.Post> postList = postRepository.findAllByDocumentId(Long.valueOf(docId));
         return postList.stream()
             .map(post -> new Post(post.getId(), Long.valueOf(docId), post.getUserId(), post.getTitle(), post.getBody()))
                 .collect(Collectors.toList());
     }
-
 }
