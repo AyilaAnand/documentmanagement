@@ -3,6 +3,7 @@ package com.document.management.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,9 +33,17 @@ public static Logger logger = LoggerFactory.getLogger(DocumentController.class);
 
     @Autowired
     private DocumentService documentService;
-
+/**
+ * Method to upload the pdf document
+ * @param file
+ * @return
+ */
     @PostMapping("/upload")
     public String uploadDocument(@RequestParam("file") MultipartFile file) {
+        if(file.getContentType() != MediaType.APPLICATION_PDF_VALUE) {
+            logger.info("File Type should be PDF only");
+            return "File Type must be PDF only";
+        }
         Document document = documentService.uploadDocument(file);
         if(document.getId() > 0) {
             logger.info("document upload completed");
@@ -45,11 +54,20 @@ public static Logger logger = LoggerFactory.getLogger(DocumentController.class);
         }
     }
 
+    /**
+     * Method to delete the document based on the given ID
+     * @param documentId
+     * @return
+     */
     @DeleteMapping("/{documentId}")
     public boolean deleteDocument(@PathVariable("documentId") @NonNull String documentId) {
             return documentService.deleteDocument(Long.valueOf(documentId));
     }
 
+    /**
+     * To fetch all documents uploaded to system 
+     * @return
+     */
     @GetMapping("/all")
     public List<DocumentResponse> getAllDocuments() {
         List<Document> documentList = documentService.getAllDocuments();
@@ -59,18 +77,36 @@ public static Logger logger = LoggerFactory.getLogger(DocumentController.class);
         .toUriString())).collect(Collectors.toList());
     }
     
+    /**
+     * Add the post for a particular document
+     * @param id
+     * @param post
+     * @return
+     */
     @PostMapping("/{id}/posts/create")
     public String createPostOnDocument(@PathVariable("id")  @NonNull String id, @RequestBody Post post) {
         documentService.createPostOnDocument(id, post);
         return "post created successfully"; 
     }
 
+    /**
+     * Add the comment and associate it to document so that replies can be given to posts
+     * @param docId
+     * @param postId
+     * @param comment
+     * @return
+     */
     @PostMapping("/{docId}/posts/{postId}/comments/create")
     public String createCommentOnDocumentForPost(@PathVariable("docId")  @NonNull String docId, @PathVariable("postId")  @NonNull String postId, @RequestBody Comment comment) {
         documentService.createCommentOnDocumentForPost(docId, postId, comment);
         return "Comment created Successfully";
     }
 
+    /**
+     * Fetch all the posts associated to a particular document
+     * @param docId
+     * @return
+     */
     @GetMapping("/{docId}/posts")
     public List<Post> getDocumentPosts(@PathVariable("docId")  @NonNull String docId) {
         return documentService.getDocumentPosts(docId);

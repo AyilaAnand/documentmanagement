@@ -37,6 +37,11 @@ public class DocumentService {
     @Autowired
     private CommentRepository commentRepository;
 
+    /**
+     * Upload document functionality
+     * @param file
+     * @return
+     */
     public Document uploadDocument(MultipartFile file) {
         Document document = new Document();
         try {
@@ -49,6 +54,11 @@ public class DocumentService {
         return documentRepository.save(document);
     }
 
+    /**
+     * Delete the document for the given documentID
+     * @param documentId
+     * @return
+     */
     public boolean deleteDocument(@NonNull Long documentId) {
         documentRepository.deleteById(documentId);
         if(documentRepository.findById(documentId).isEmpty()) {
@@ -59,10 +69,19 @@ public class DocumentService {
         return false;
     }
 
+    /**
+     * Fetch all documents from the system
+     * @return
+     */
     public List<Document> getAllDocuments() {
         return documentRepository.findAll();
     }
 
+    /**
+     * Create the post for the given documentID
+     * @param id
+     * @param post
+     */
     public void createPostOnDocument(@NonNull String id, @NonNull Post post) {
         logger.info("post data::{}", post);
         post = jsonPlaceholderFeignService.createPostForDocument(post);
@@ -76,6 +95,12 @@ public class DocumentService {
         postRepository.save(postEntity);
     }
 
+    /**
+     * Create the comment for the given documentID to reply for the posts
+     * @param docId
+     * @param postId
+     * @param comment
+     */
     public void createCommentOnDocumentForPost(@NonNull String docId, @NonNull String postId, @NonNull Comment comment) {
         comment = jsonPlaceholderFeignService.createCommentForDocument(comment);
         com.document.management.entity.Comment commentEntity = new com.document.management.entity.Comment();
@@ -91,6 +116,11 @@ public class DocumentService {
         commentRepository.save(commentEntity);
     }
 
+    /**
+     * Fetch all posts associated for the given documentID
+     * @param docId
+     * @return
+     */
     public List<Post> getDocumentPosts(@NonNull String docId) {
         List<com.document.management.entity.Post> postList = postRepository.findAllByDocumentId(Long.valueOf(docId));
         return postList.stream()

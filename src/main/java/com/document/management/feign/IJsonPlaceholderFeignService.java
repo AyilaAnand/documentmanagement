@@ -12,9 +12,20 @@ import com.document.management.model.Post;
                 url = "https://jsonplaceholder.typicode.com",
                 configuration = FeignClientConfiguration.class)
 public interface IJsonPlaceholderFeignService {
+
+    /**
+     * Add the post for a given document
+     * @param post
+     * @return
+     */
     @PostMapping(path ="/posts")
     Post createPostForDocument(@RequestBody Post post);
 
+    /**
+     * Add the comment for a given document
+     * @param comment
+     * @return
+     */
     @PostMapping(path = "/comments")
     Comment createCommentForDocument(@RequestBody Comment comment);
 

@@ -7,6 +7,10 @@ import feign.RequestInterceptor;
 
 public class FeignClientConfiguration {
 
+    /**
+     * Feign client interceptor updating the headers that will be passed in each request.
+     * @return
+     */
     @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
