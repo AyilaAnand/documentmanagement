@@ -9,7 +9,7 @@ import com.document.management.model.Comment;
 import com.document.management.model.Post;
 
 @FeignClient(name ="jsonPlaceholderFeignService",
-                url = "https://jsonplaceholder.typicode.com",
+                url = "${api.base.url}",
                 configuration = FeignClientConfiguration.class)
 public interface IJsonPlaceholderFeignService {
 
