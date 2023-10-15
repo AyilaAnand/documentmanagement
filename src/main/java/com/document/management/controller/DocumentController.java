@@ -40,7 +40,8 @@ public static Logger logger = LoggerFactory.getLogger(DocumentController.class);
  */
     @PostMapping("/upload")
     public String uploadDocument(@RequestParam("file") MultipartFile file) {
-        if(file.getContentType() != MediaType.APPLICATION_PDF_VALUE) {
+            logger.info("File Type@@ {}", file.getContentType());
+        if(!file.getContentType().equalsIgnoreCase(MediaType.APPLICATION_PDF_VALUE)) {
             logger.info("File Type should be PDF only");
             return "File Type must be PDF only";
         }
